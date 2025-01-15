@@ -26,7 +26,7 @@ class Listing(models.Model):
     (FACE_TO_FACE, "Face to Face"),]
 
     study_mode = models.CharField(
-        max_length=3,
+        max_length=20,
         choices=STUDY_MODE_CHOICES
     )
 
