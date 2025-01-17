@@ -3,6 +3,7 @@ from django.apps import apps
 from .models import Eligibility, Type, Discipline
 
 class ListingSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.id')
     eligibility = serializers.PrimaryKeyRelatedField(queryset=Eligibility.objects.all(), many=True)
     type = serializers.PrimaryKeyRelatedField(queryset=Type.objects.all(), many=True)
     discipline = serializers.PrimaryKeyRelatedField(queryset=Discipline.objects.all(), many=True)

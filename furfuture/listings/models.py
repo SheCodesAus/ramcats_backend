@@ -12,11 +12,11 @@ class Type(models.Model):
 
 class Listing(models.Model):
     title = models.CharField(max_length=5000)
-    description = models.TextField()
-    listing_url = models.URLField(max_length=200)
+    description = models.TextField(blank=False)
+    listing_url = models.URLField(max_length=200, blank=False)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     create_date = models.DateTimeField(auto_now_add=True)
-    close_date = models.DateField(auto_now=False, auto_now_add=False)
+    close_date = models.DateField(auto_now=False, auto_now_add=False, blank=False)
     
     ONLINE = "ONLINE"
     FACE_TO_FACE = "FACE_TO_FACE"
@@ -64,14 +64,14 @@ class Listing(models.Model):
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
-        default=OPEN
+        default=OPEN,
     )
 
     eligibility = models.ManyToManyField(Eligibility, related_name="listings")
     discipline = models.ManyToManyField(Discipline, related_name="listings")
     type = models.ManyToManyField(Type, related_name="listings")
 
-    organisation = models.ForeignKey(
+    user = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
         related_name='owned_listings')

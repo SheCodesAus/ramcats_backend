@@ -16,5 +16,17 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         organisation_data = validated_data.pop('organisation')
-        organisation, created = Organisation.objects.get_or_create(name=organisation_data['name'])
-        return CustomUser.objects.create(organisation=organisation, **validated_data)
+        organisation, created = Organisation.objects.get_or_create(
+            name=organisation_data['name'],
+            defaults={'image': organisation_data.get('image'), 'website': organisation_data.get('website'), 'description': organisation_data.get('description')})
+        
+        if not created:
+            organisation.image = organisation_data.get('image',organisation.image)
+            organisation.website = organisation_data.get('website',organisation.website)
+            organisation.description = organisation_data.get('description',organisation.description)
+
+        user = CustomUser.objects.create_user(
+            organisation=organisation,
+            **validated_data
+        )
+        return user
