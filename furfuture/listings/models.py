@@ -71,7 +71,7 @@ class Listing(models.Model):
     discipline = models.ManyToManyField(Discipline, related_name="listings")
     type = models.ManyToManyField(Type, related_name="listings")
 
-    user = models.ForeignKey(
+    owner = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
         related_name='owned_listings')

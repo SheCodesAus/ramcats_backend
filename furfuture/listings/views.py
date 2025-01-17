@@ -13,7 +13,7 @@ class ListingList(APIView):
     def post(self,request):
         serializer = ListingSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(organisation=request.user)
+            serializer.save(owner=request.user)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
