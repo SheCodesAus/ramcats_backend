@@ -34,7 +34,7 @@ class CustomUser(AbstractUser):
 
 class Organisation(models.Model):
     name = models.CharField(max_length=500)
-    image = models.URLField(blank=False)
+    logo = models.URLField(blank=False)
     website = models.URLField(blank=False)
     description = models.TextField(blank=False)
 
