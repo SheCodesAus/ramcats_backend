@@ -19,7 +19,7 @@ class Opportunity(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     open_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=False)
     close_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=False)
-    
+    is_archieve = models.BooleanField()
     
     ONLINE = "ONLINE"
     FACE_TO_FACE = "FACE_TO_FACE"
