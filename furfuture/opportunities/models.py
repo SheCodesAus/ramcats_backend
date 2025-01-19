@@ -10,24 +10,27 @@ class Discipline(models.Model):
 class Type(models.Model):
     description = models.CharField(max_length=500)
 
-class Listing(models.Model):
+class Opportunity(models.Model):
     title = models.CharField(max_length=5000)
     description = models.TextField(blank=False)
-    listing_url = models.URLField(max_length=200, blank=False)
+    opportunity_url = models.URLField(max_length=200, blank=False)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
+    is_open = models.BooleanField()
     create_date = models.DateTimeField(auto_now_add=True)
-    close_date = models.DateField(auto_now=False, auto_now_add=False, blank=False)
+    open_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=False)
+    close_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=False)
+    is_archive = models.BooleanField()
     
     ONLINE = "ONLINE"
     FACE_TO_FACE = "FACE_TO_FACE"
 
-    STUDY_MODE_CHOICES = [
+    ATTENDENCE_MODE_CHOICES = [
     (ONLINE, "Online"),
     (FACE_TO_FACE, "Face to Face"),]
 
-    study_mode = models.CharField(
+    attendance_mode = models.CharField(
         max_length=20,
-        choices=STUDY_MODE_CHOICES
+        choices=ATTENDENCE_MODE_CHOICES
     )
 
     AUSTRALIAN_CAPITAL_TERRITORY = "ACT"
@@ -56,25 +59,18 @@ class Listing(models.Model):
         default=WESTERN_AUSTRALIA
     )
 
-    OPEN = "OPEN"
-    CLOSE ="CLOSED"
-
-    STATUS_CHOICES =  [(OPEN, "Open"),(CLOSE, "Closed")]
-
-    status = models.CharField(
-        max_length=10,
-        choices=STATUS_CHOICES,
-        default=OPEN,
-    )
-
-    eligibility = models.ManyToManyField(Eligibility, related_name="listings")
-    discipline = models.ManyToManyField(Discipline, related_name="listings")
-    type = models.ManyToManyField(Type, related_name="listings")
+    eligibility = models.ManyToManyField(Eligibility, related_name="opportunities")
+    discipline = models.ManyToManyField(Discipline, related_name="opportunities")
+    type = models.ManyToManyField(Type, related_name="opportunities")
 
     owner = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
-        related_name='owned_listings')
+        related_name='owned_opportunities')
+    
+    @property
+    def organisation (self):
+        return self.owner.organisation
 
     def clean(self):
         if self.study_mode:

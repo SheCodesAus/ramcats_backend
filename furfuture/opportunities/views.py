@@ -1,17 +1,17 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Listing, Eligibility, Discipline, Type
-from .serializers import ListingSerializer, EligibilitySerializer, DisciplineSerializer, TypeSerializer
+from .models import Opportunity, Eligibility, Discipline, Type
+from .serializers import OpportunitySerializer, EligibilitySerializer, DisciplineSerializer, TypeSerializer
 
-class ListingList(APIView):
+class OpportunityList(APIView):
     def get(self,request):
-        listings = Listing.objects.all()
-        serializer = ListingSerializer(listings, many=True)
+        opportunities = Opportunity.objects.all()
+        serializer = OpportunitySerializer(opportunities, many=True)
         return Response(serializer.data)
     
     def post(self,request):
-        serializer = ListingSerializer(data=request.data)
+        serializer = OpportunitySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
             return Response(
