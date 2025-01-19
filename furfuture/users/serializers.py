@@ -18,10 +18,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
         organisation_data = validated_data.pop('organisation')
         organisation, created = Organisation.objects.get_or_create(
             name=organisation_data['name'],
-            defaults={'image': organisation_data.get('image'), 'website': organisation_data.get('website'), 'description': organisation_data.get('description')})
+            defaults={'logo': organisation_data.get('logo'), 'website': organisation_data.get('website'), 'description': organisation_data.get('description')})
         
         if not created:
-            organisation.image = organisation_data.get('image',organisation.image)
+            organisation.logo = organisation_data.get('logo',organisation.logo)
             organisation.website = organisation_data.get('website',organisation.website)
             organisation.description = organisation_data.get('description',organisation.description)
 

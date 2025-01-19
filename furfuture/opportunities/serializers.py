@@ -19,7 +19,7 @@ class OpportunitySerializer(serializers.ModelSerializer):
                       "name": obj.owner.organisation.name,
                       "website": obj.owner.organisation.website,
                       "description": obj.owner.organisation.description,
-                      "image": obj.owner.organisation.image,
+                      "logo": obj.owner.organisation.logo,
 
                 }
           return None
