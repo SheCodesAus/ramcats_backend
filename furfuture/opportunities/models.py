@@ -19,7 +19,7 @@ class Opportunity(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     open_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=False)
     close_date = models.DateTimeField(auto_now=False, auto_now_add=False, blank=False)
-    is_archieve = models.BooleanField()
+    is_archive = models.BooleanField()
     
     ONLINE = "ONLINE"
     FACE_TO_FACE = "FACE_TO_FACE"
@@ -28,7 +28,7 @@ class Opportunity(models.Model):
     (ONLINE, "Online"),
     (FACE_TO_FACE, "Face to Face"),]
 
-    attendence_mode = models.CharField(
+    attendance_mode = models.CharField(
         max_length=20,
         choices=ATTENDENCE_MODE_CHOICES
     )
@@ -67,6 +67,10 @@ class Opportunity(models.Model):
         get_user_model(),
         on_delete=models.CASCADE,
         related_name='owned_opportunities')
+    
+    @property
+    def organisation (self):
+        return self.owner.organisation
 
     def clean(self):
         if self.study_mode:
