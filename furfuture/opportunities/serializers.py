@@ -2,25 +2,25 @@ from rest_framework import serializers
 from django.apps import apps
 from .models import Eligibility, Type, Discipline
 
-class ListingSerializer(serializers.ModelSerializer):
+class OpportunitySerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.id')
     eligibility = serializers.PrimaryKeyRelatedField(queryset=Eligibility.objects.all(), many=True)
     type = serializers.PrimaryKeyRelatedField(queryset=Type.objects.all(), many=True)
     discipline = serializers.PrimaryKeyRelatedField(queryset=Discipline.objects.all(), many=True)
     class Meta:
-        model = apps.get_model('listings.Listing')
+        model = apps.get_model('opportunities.Opportunity')
         fields = '__all__'
 
 class EligibilitySerializer(serializers.ModelSerializer):
         class Meta:
-            model = apps.get_model('listings.Eligibility')
+            model = apps.get_model('opportunities.Eligibility')
             fields='__all__'
 
 class DisciplineSerializer(serializers.ModelSerializer):
         class Meta:
-            model = apps.get_model('listings.Discipline')
+            model = apps.get_model('opportunities.Discipline')
             fields='__all__'
 class TypeSerializer(serializers.ModelSerializer):
         class Meta:
-            model = apps.get_model('listings.Type')
+            model = apps.get_model('opportunities.Type')
             fields='__all__'
