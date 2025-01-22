@@ -8,23 +8,42 @@ class OrganisationSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    organisation = OrganisationSerializer()
+    organisation = OrganisationSerializer(required=False,allow_null=True)
 
     class Meta:
         model = CustomUser
         fields = "__all__"
         extra_kwargs = {'password': {'write_only': True}}
+    
+    def validate(self, data):
+        user_type = data.get("user_type")
+        organisation = data.get("organisation",None)
+        
+        if user_type == CustomUser.APPLICANT and organisation is not None:
+            raise serializers.ValidationError({"organisation": "Applicants should not have an organisation."})
+        
+        if user_type == CustomUser.ORGANISATION and organisation is None:
+            raise serializers.ValidationError({"organisation": "Organisations must have an associated organisation."})
+        return data
+
 
     def create(self, validated_data):
-        organisation_data = validated_data.pop('organisation')
-        organisation, created = Organisation.objects.get_or_create(
-            name=organisation_data['name'],
-            defaults={'logo': organisation_data.get('logo'), 'website': organisation_data.get('website'), 'description': organisation_data.get('description')})
+        organisation_data = validated_data.pop('organisation',None)
+        organisation = None
+
+        if organisation_data:
+            organisation, created = Organisation.objects.get_or_create(
+                name=organisation_data['name'],
+                defaults={
+                    'logo': organisation_data.get('logo'), 
+                    'website': organisation_data.get('website'), 
+                    'description': organisation_data.get('description')})
         
-        if not created:
-            organisation.logo = organisation_data.get('logo',organisation.logo)
-            organisation.website = organisation_data.get('website',organisation.website)
-            organisation.description = organisation_data.get('description',organisation.description)
+            if not created:
+                organisation.logo = organisation_data.get('logo',organisation.logo)
+                organisation.website = organisation_data.get('website',organisation.website)
+                organisation.description = organisation_data.get('description',organisation.description)
+                organisation.save()
 
         user = CustomUser.objects.create_user(
             organisation=organisation,
@@ -62,3 +81,4 @@ class OrganisationDetailSerializer(OrganisationSerializer):
         instance.description = validated_data.get('description', instance.description)
         instance.save()
         return instance
+    

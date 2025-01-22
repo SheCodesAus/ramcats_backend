@@ -23,10 +23,15 @@ class CustomUser(AbstractUser):
     )
 
     def clean(self):
-        # TODO: ADD additional logic to user_type == applicant
+        if self.user_type == self.APPLICANT:
+            self.organisation = None
         if self.user_type == self.ORGANISATION and not self.organisation:
             raise ValidationError("Organisations must have an associated organisation.")
         super().clean()
+    
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.username

@@ -78,3 +78,22 @@ class Opportunity(models.Model):
         if self.status:
             self.status = self.status.upper()
         super().clean()
+
+class SavedOpportunity(models.Model):
+    applicant = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name='saved_opportunities'
+    )
+    opportunity = models.ForeignKey(
+        Opportunity,
+        on_delete=models.CASCADE,
+        related_name='saved_by_applicants'
+    )
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('applicant', 'opportunity')
+    
+    def __str__(self):
+        return f"{self.applicant.username} saved {self.opportunity.title}"
