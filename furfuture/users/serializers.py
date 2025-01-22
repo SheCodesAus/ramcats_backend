@@ -47,3 +47,18 @@ class CustomUserDetailSerializer(CustomUserSerializer):
         instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
         return instance
+
+class NestedCustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id','username','first_name','last_name','email']
+    
+class OrganisationDetailSerializer(OrganisationSerializer):
+    users = NestedCustomUserSerializer(many=True, read_only=True)
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.logo = validated_data.get('logo', instance.logo)
+        instance.website = validated_data.get('website', instance.website)
+        instance.description = validated_data.get('description', instance.description)
+        instance.save()
+        return instance
