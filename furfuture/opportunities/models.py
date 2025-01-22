@@ -79,7 +79,7 @@ class Opportunity(models.Model):
             self.status = self.status.upper()
         super().clean()
 
-class SavedOpportunity(models.Model):
+class SavedOpportunity(Opportunity):
     applicant = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
