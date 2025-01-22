@@ -97,8 +97,6 @@ class OrganisationDetailView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
-   
-
 class CustomAuthToken(ObtainAuthToken):
   def post(self, request, *args, **kwargs):
       serializer = self.serializer_class(
