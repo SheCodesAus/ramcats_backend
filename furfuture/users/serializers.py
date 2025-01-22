@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import CustomUser, Organisation
+from opportunities.serializers import OpportunitySerializer
 
 class OrganisationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,3 +31,19 @@ class CustomUserSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return user
+
+class CustomUserDetailSerializer(CustomUserSerializer):
+    owned_opportunities = OpportunitySerializer(many=True, read_only=True)
+
+    def update(self,instance,validated_data):
+        instance.username = validated_data.get('username',instance.username)
+        password = validated_data.get('password',None)
+        if password:
+            instance.set_password(password)
+        instance.email = validated_data.get('email', instance.email)
+        instance.is_staff = validated_data.get('is_staff', instance.is_staff)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
+        instance.save()
+        return instance
