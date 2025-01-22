@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import CustomUser, Organisation
-from opportunities.serializers import OpportunitySerializer
+from opportunities.serializers import NestedOpportunitySerializer
 
 class OrganisationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,7 +33,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return user
 
 class CustomUserDetailSerializer(CustomUserSerializer):
-    owned_opportunities = OpportunitySerializer(many=True, read_only=True)
+    owned_opportunities = NestedOpportunitySerializer(many=True, read_only=True)
 
     def update(self,instance,validated_data):
         instance.username = validated_data.get('username',instance.username)

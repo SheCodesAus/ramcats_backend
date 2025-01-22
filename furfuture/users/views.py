@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import CustomUser
-from .serializers import CustomUserSerializer
+from .serializers import CustomUserSerializer, CustomUserDetailSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 
@@ -35,8 +35,27 @@ class CustomUserDetail(APIView):
 
    def get(self, request, pk):
        user = self.get_object(pk)
-       serializer = CustomUserSerializer(user)
+       serializer = CustomUserDetailSerializer(user)
        return Response(serializer.data)
+   
+   def put(self, request, pk):
+       user = self.get_object(pk)
+       serializer = CustomUserDetailSerializer(
+           instance = user,
+           data= request.data,
+           partial=True
+       )
+
+       if serializer.is_valid():
+           serializer.save()
+           return Response(
+               serializer.data,
+               status=status.HTTP_202_ACCEPTED
+           )
+       return Response(
+           serializer.errors,
+           status=status.HTTP_400_BAD_REQUEST)
+
    
 
 class CustomAuthToken(ObtainAuthToken):

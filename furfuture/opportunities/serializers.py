@@ -36,3 +36,11 @@ class TypeSerializer(serializers.ModelSerializer):
         class Meta:
             model = apps.get_model('opportunities.Type')
             fields='__all__'
+
+class NestedOpportunitySerializer(serializers.ModelSerializer):
+    eligibility = serializers.PrimaryKeyRelatedField(queryset=Eligibility.objects.all(), many=True)
+    type = serializers.PrimaryKeyRelatedField(queryset=Type.objects.all(), many=True)
+    discipline = serializers.PrimaryKeyRelatedField(queryset=Discipline.objects.all(), many=True)
+    class Meta:
+        model = apps.get_model('opportunities.Opportunity')
+        exclude = ['owner']
