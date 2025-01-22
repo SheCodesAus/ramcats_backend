@@ -79,7 +79,7 @@ class Opportunity(models.Model):
             self.status = self.status.upper()
         super().clean()
 
-class SavedOpportunity(Opportunity):
+class SavedOpportunity(models.Model):
     applicant = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
@@ -87,7 +87,7 @@ class SavedOpportunity(Opportunity):
     )
     opportunity = models.ForeignKey(
         Opportunity,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='saved_by_applicants'
     )
     saved_at = models.DateTimeField(auto_now_add=True)

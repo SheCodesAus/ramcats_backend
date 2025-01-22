@@ -40,8 +40,9 @@ class SavedOpportunityView(APIView):
         user=request.user
         if user.user_type != user.APPLICANT:
             return Response({"detail": "Only applicants can view saved opportunities."}, status=status.HTTP_400_BAD_REQUEST)
-        saved_opportunities = user.saved_opportunities.all()
-        serializer = OpportunitySerializer(saved_opportunities, many=True)
+        saved_opportunities = SavedOpportunity.objects.filter(applicant=user).select_related('opportunity')
+        opportunities = [save_opportunity.opportunity for save_opportunity in saved_opportunities]
+        serializer = OpportunitySerializer(opportunities, many=True)
         return Response(serializer.data)
     
     def delete(self,request,opportunity_id):
