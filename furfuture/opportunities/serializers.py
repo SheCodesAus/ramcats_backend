@@ -65,3 +65,19 @@ class OpportunityDetailSerializer(OpportunitySerializer):
     instance.owner = validated_data.get('owner', instance.owner)
     instance.save()
     return instance
+  
+class EligibilityDetailSerializer(EligibilitySerializer):
+     def update(self, instance, validated_data):
+          instance.description =  validated_data.get('description', instance.description)
+          instance.save()
+          return instance
+class DisciplineDetailSerializer(DisciplineSerializer):
+     def update(self, instance, validated_data):
+          instance.description =  validated_data.get('description', instance.description)
+          instance.save()
+          return instance
+class TypeDetailSerializer(TypeSerializer):
+     def update(self, instance, validated_data):
+          instance.description =  validated_data.get('description', instance.description)
+          instance.save()
+          return instance
