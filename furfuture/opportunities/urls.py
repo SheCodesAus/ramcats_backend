@@ -6,6 +6,7 @@ urlpatterns = [
     path('eligibilities/', views.EligibilityList.as_view()),
     path('disciplines/', views.DisciplineList.as_view()),
     path('types/', views.TypeList.as_view()),
+    path('opportunities/<int:pk>/', views.OpportunityDetail.as_view()),
     path('saved-opportunities/', views.SavedOpportunityView.as_view()),
     path('saved-opportunities/<int:opportunity_id>/', views.SavedOpportunityView.as_view()),
 ]
