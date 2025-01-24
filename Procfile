@@ -1,2 +1,2 @@
-release: python crowdfunding/manage.py migrate
-web: gunicorn --pythonpath crowdfunding crowdfunding.wsgi --log-file -
+release: python furfuture/manage.py migrate
+web: gunicorn --pythonpath furfuture furfuture.wsgi --log-file -
