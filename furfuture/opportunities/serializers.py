@@ -46,25 +46,17 @@ class NestedOpportunitySerializer(serializers.ModelSerializer):
         exclude = ['owner']
 
 class OpportunityDetailSerializer(OpportunitySerializer):
-  eligibilities = EligibilitySerializer(many=True, read_only=True)
-  disciplines = DisciplineSerializer(many=True, read_only=True)
-  types = TypeSerializer(many=True, read_only=True)
+    eligibilities = EligibilitySerializer(many=True, read_only=True)
+    disciplines = DisciplineSerializer(many=True, read_only=True)
+    types = TypeSerializer(many=True, read_only=True)
 
-  def update(self, instance, validated_data):
-    instance.title = validated_data.get('title', instance.title)
-    instance.description = validated_data.get('description', instance.description)
-    instance.opportunity_url = validated_data.get('opportunity_url', instance.opportunity_url)
-    instance.amount = validated_data.get('amount', instance.amount)
-    instance.is_open = validated_data.get('is_open', instance.is_open)
-    instance.create_date = validated_data.get('create_date', instance.create_date)
-    instance.open_date = validated_data.get('end_date', instance.open_date)
-    instance.close_date = validated_data.get('open_date', instance.close_date)
-    instance.is_archive = validated_data.get('is_archive', instance.is_archive)
-    instance.attendance_mode = validated_data.get('attendance_mode', instance.attendance_mode)
-    instance.location = validated_data.get('location', instance.location)
-    instance.owner = validated_data.get('owner', instance.owner)
-    instance.save()
-    return instance
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        if instance.is_archive:
+             instance.is_open = False
+        instance.save()
+        return instance
   
 class EligibilityDetailSerializer(EligibilitySerializer):
      def update(self, instance, validated_data):

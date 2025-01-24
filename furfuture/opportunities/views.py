@@ -1,17 +1,23 @@
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.filters import SearchFilter, OrderingFilter
 from django.http import Http404
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Opportunity, Eligibility, Discipline, Type, SavedOpportunity
 from django.shortcuts import get_object_or_404
+from .filters import OpportunityFilter
 from .serializers import OpportunitySerializer, EligibilitySerializer, DisciplineSerializer, TypeSerializer, OpportunityDetailSerializer, EligibilityDetailSerializer, TypeDetailSerializer, DisciplineDetailSerializer
 
-class OpportunityList(APIView):
-    def get(self,request):
-        opportunities = Opportunity.objects.all()
-        serializer = OpportunitySerializer(opportunities, many=True)
-        return Response(serializer.data)
-    
+class OpportunityList(generics.ListAPIView):
+    queryset = Opportunity.objects.all()
+    serializer_class = OpportunitySerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = OpportunityFilter
+    search_fields = ['title', 'description']
+    ordering_fields = ['open_date','close_date']
+
     def post(self,request):
         serializer = OpportunitySerializer(data=request.data)
         if serializer.is_valid():
