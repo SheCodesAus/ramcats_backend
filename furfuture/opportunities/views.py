@@ -8,18 +8,18 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Opportunity, Eligibility, Discipline, Type, SavedOpportunity
 from django.shortcuts import get_object_or_404
 from .filters import OpportunityFilter
-from .serializers import OpportunitySerializer, EligibilitySerializer, DisciplineSerializer, TypeSerializer, OpportunityDetailSerializer, EligibilityDetailSerializer, TypeDetailSerializer, DisciplineDetailSerializer
+from .serializers import GetOpportunitySerializer, PostOpportunitySerializer, EligibilitySerializer, DisciplineSerializer, TypeSerializer, OpportunityDetailSerializer, EligibilityDetailSerializer, TypeDetailSerializer, DisciplineDetailSerializer
 
 class OpportunityList(generics.ListAPIView):
     queryset = Opportunity.objects.all()
-    serializer_class = OpportunitySerializer
+    serializer_class = GetOpportunitySerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = OpportunityFilter
     search_fields = ['title', 'description']
     ordering_fields = ['open_date','close_date']
 
     def post(self,request):
-        serializer = OpportunitySerializer(data=request.data)
+        serializer = PostOpportunitySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
             return Response(
@@ -49,7 +49,7 @@ class SavedOpportunityView(APIView):
             return Response({"detail": "Only applicants can view saved opportunities."}, status=status.HTTP_400_BAD_REQUEST)
         saved_opportunities = SavedOpportunity.objects.filter(applicant=user).select_related('opportunity')
         opportunities = [saved_opportunity.opportunity for saved_opportunity in saved_opportunities]
-        serializer = OpportunitySerializer(opportunities, many=True)
+        serializer = GetOpportunitySerializer(opportunities, many=True)
         return Response(serializer.data)
     
     def delete(self,request,opportunity_id):

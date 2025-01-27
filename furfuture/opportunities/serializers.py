@@ -2,7 +2,43 @@ from rest_framework import serializers
 from django.apps import apps
 from .models import Eligibility, Type, Discipline
 
-class OpportunitySerializer(serializers.ModelSerializer):
+
+class EligibilitySerializer(serializers.ModelSerializer):
+        class Meta:
+            model = apps.get_model('opportunities.Eligibility')
+            fields='__all__'
+
+class DisciplineSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = apps.get_model('opportunities.Discipline')
+            fields='__all__'
+class TypeSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = apps.get_model('opportunities.Type')
+            fields='__all__'
+class GetOpportunitySerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.id')
+    organisation = serializers.SerializerMethodField()
+    eligibility = EligibilitySerializer(many=True, read_only=True)
+    type = TypeSerializer (many=True, read_only=True)
+    discipline = DisciplineSerializer (many=True, read_only=True)
+    class Meta:
+        model = apps.get_model('opportunities.Opportunity')
+        fields = '__all__'
+    
+    def get_organisation(self,obj):
+          if obj.owner and obj.owner.organisation:
+                return{
+                      "id": obj.owner.organisation.id,
+                      "name": obj.owner.organisation.name,
+                      "website": obj.owner.organisation.website,
+                      "description": obj.owner.organisation.description,
+                      "logo": obj.owner.organisation.logo,
+
+                }
+          return None
+
+class PostOpportunitySerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.id')
     organisation = serializers.SerializerMethodField()
     eligibility = serializers.PrimaryKeyRelatedField(queryset=Eligibility.objects.all(), many=True)
@@ -23,20 +59,6 @@ class OpportunitySerializer(serializers.ModelSerializer):
 
                 }
           return None
-class EligibilitySerializer(serializers.ModelSerializer):
-        class Meta:
-            model = apps.get_model('opportunities.Eligibility')
-            fields='__all__'
-
-class DisciplineSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = apps.get_model('opportunities.Discipline')
-            fields='__all__'
-class TypeSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = apps.get_model('opportunities.Type')
-            fields='__all__'
-
 class NestedOpportunitySerializer(serializers.ModelSerializer):
     eligibility = serializers.PrimaryKeyRelatedField(queryset=Eligibility.objects.all(), many=True)
     type = serializers.PrimaryKeyRelatedField(queryset=Type.objects.all(), many=True)
@@ -45,7 +67,7 @@ class NestedOpportunitySerializer(serializers.ModelSerializer):
         model = apps.get_model('opportunities.Opportunity')
         exclude = ['owner']
 
-class OpportunityDetailSerializer(OpportunitySerializer):
+class OpportunityDetailSerializer(GetOpportunitySerializer):
     eligibilities = EligibilitySerializer(many=True, read_only=True)
     disciplines = DisciplineSerializer(many=True, read_only=True)
     types = TypeSerializer(many=True, read_only=True)
