@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -9,8 +9,10 @@ from .models import Opportunity, Eligibility, Discipline, Type, SavedOpportunity
 from django.shortcuts import get_object_or_404
 from .filters import OpportunityFilter
 from .serializers import OpportunitySerializer, EligibilitySerializer, DisciplineSerializer, TypeSerializer, OpportunityDetailSerializer, EligibilityDetailSerializer, TypeDetailSerializer, DisciplineDetailSerializer
+from .permissions import IsOwnerOrReadOnly
 
 class OpportunityList(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = Opportunity.objects.all()
     serializer_class = OpportunitySerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -117,9 +119,16 @@ class TypeList(APIView):
     
 class OpportunityDetail(APIView):
 
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrReadOnly
+   ]
+
+
     def get_object(self, pk):
         try:
             opportunity = Opportunity.objects.get(pk=pk)
+            self.check_object_permissions(self.request, opportunity)
             return opportunity
         except Opportunity.DoesNotExist:
             raise Http404
