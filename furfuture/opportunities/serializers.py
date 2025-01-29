@@ -67,16 +67,27 @@ class NestedOpportunitySerializer(serializers.ModelSerializer):
         model = apps.get_model('opportunities.Opportunity')
         exclude = ['owner']
 
-class OpportunityDetailSerializer(GetOpportunitySerializer):
-    eligibilities = EligibilitySerializer(many=True, read_only=True)
-    disciplines = DisciplineSerializer(many=True, read_only=True)
-    types = TypeSerializer(many=True, read_only=True)
+# class OpportunityDetailSerializer(GetOpportunitySerializer):
+#     # eligibilities = EligibilitySerializer(many=True, read_only=True)
+#     # disciplines = DisciplineSerializer(many=True, read_only=True)
+#     # types = TypeSerializer(many=True, read_only=True)
 
+class UpdateOpportunityDetailSerializer(PostOpportunitySerializer):
     def update(self, instance, validated_data):
         for field, value in validated_data.items():
-            setattr(instance, field, value)
+            if field == "eligibility":
+                instance.eligibility.set(value)
+            elif field == "type":
+                instance.type.set(value)
+            elif field == "discipline":
+                instance.discipline.set(value)
+            else:
+                setattr(instance, field, value)
         if instance.is_archive:
              instance.is_open = False
+        # if 'eligibility' in validated_data:
+        #     eligibility_data = validated_data.pop('eligibility')
+        #     instance.eligibility.set(eligibility_data)
         instance.save()
         return instance
   

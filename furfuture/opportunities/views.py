@@ -8,7 +8,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Opportunity, Eligibility, Discipline, Type, SavedOpportunity
 from django.shortcuts import get_object_or_404
 from .filters import OpportunityFilter
-from .serializers import GetOpportunitySerializer, PostOpportunitySerializer, EligibilitySerializer, DisciplineSerializer, TypeSerializer, OpportunityDetailSerializer, EligibilityDetailSerializer, TypeDetailSerializer, DisciplineDetailSerializer
+from .serializers import GetOpportunitySerializer, PostOpportunitySerializer, EligibilitySerializer, DisciplineSerializer, TypeSerializer, EligibilityDetailSerializer, TypeDetailSerializer, DisciplineDetailSerializer
+# from .serializers import OpportunityDetailSerializer
+from .serializers import UpdateOpportunityDetailSerializer
 
 class OpportunityList(generics.ListAPIView):
     queryset = Opportunity.objects.all()
@@ -126,13 +128,13 @@ class OpportunityDetail(APIView):
 
     def get(self, request, pk):
         opportunity = self.get_object(pk)
-        serializer = OpportunityDetailSerializer(opportunity)
+        serializer = GetOpportunitySerializer(opportunity)
         return Response(serializer.data)
     
     
     def put(self, request, pk):
         opportunity = self.get_object(pk)
-        serializer = OpportunityDetailSerializer(
+        serializer = UpdateOpportunityDetailSerializer(
         instance=opportunity,
         data=request.data,
         partial=True
